@@ -1,4 +1,5 @@
 const { Message } = require("../model");
+const { get } = require("../router/userRouter")
 
 const sendMessage = async (req, res) => {
   try {
@@ -27,5 +28,16 @@ const sendMessage = async (req, res) => {
   }
 };
 
-
-module.exports = sendMessage;
+const getData = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const messages = await Message.findAll({ where: { userId } });
+        if (!messages) {
+          res.status(404).json({ message: "error when get  message" });
+        }
+          res.status(200).json({ message: "success",messages });
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+}
+module.exports = {sendMessage,getData};

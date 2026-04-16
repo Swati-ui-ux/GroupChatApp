@@ -30,7 +30,7 @@ const ChatUI = () => {
     };
 
     try {
-      // ✅ backend ko correct data bhejo
+      
       await axios.post("http://localhost:4000/message", {
         message: input,
       }, {
@@ -39,7 +39,8 @@ const ChatUI = () => {
     },
   });
 
-      setMessages((prev) => [...prev, newMsg]);
+        setMessages((prev) => [...prev, newMsg]);
+        getMessage()
       setInput("");
     } catch (error) {
       console.log(error);
@@ -50,6 +51,23 @@ const ChatUI = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+    const getMessage =async () => {
+    try {
+        let { data } = await axios.get("http://localhost:4000/message", {
+        headers: {
+      Authorization: localStorage.getItem("token"),
+    },
+        })
+       setMessages((prev) => [...prev, data.message])
+        console.log(data.messages)
+    } catch (error) {
+        console.log(error)
+    }
+    }
+    useEffect(() => {
+    getMessage()
+    },[])
+    
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
