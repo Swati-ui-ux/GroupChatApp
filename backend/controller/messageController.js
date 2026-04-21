@@ -31,7 +31,8 @@ const sendMessage = async (req, res) => {
 const getData = async (req, res) => {
     try {
         const userId = req.user.id;
-        const messages = await Message.findAll({ where: { userId } });
+      const messages = await Message.findAll({ where: { userId } });
+      // console.log(messages)
         if (!messages) {
           res.status(404).json({ message: "error when get  message" });
         }

@@ -2,72 +2,53 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+
 const ChatUI = () => {
   const navigate = useNavigate();
 
-  const initialData = [
-    { id: 1, text: "Hey Swati", sender: "other", time: "10:00 AM" },
-    { id: 2, text: "Hello! Kaise ho?", sender: "me", time: "10:01 AM" },
-  ];
-
-  const [messages, setMessages] = useState(initialData);
-  const [input, setInput] = useState("");
+ 
   const chatEndRef = useRef(null);
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
 
-    if (!input.trim()) return;
-
-    const newMsg = {
-      id: Date.now(),
-      text: input,
-      sender: "me",
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
+  const getMessages = async () => {
+    console.log("I am  running")
     try {
-      
-      await axios.post("http://localhost:4000/message", {
-        message: input,
-      }, {
-    headers: {
-      Authorization: localStorage.getItem("token"),
-    },
-  });
-
-        setMessages((prev) => [...prev, newMsg]);
-        getMessage()
-      setInput("");
+    let {data } = await axios
+        .get("http://localhost:4000/message", {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        })
+      setMessages(data.messages);
+      console.log(data.messages)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
+  };  
+  useEffect(() => {
+setInterval(getMessages,5000)
+  }, []);
+  const sendMessage = async(e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    try {
+     let data =  await axios
+        .post("http://localhost:4000/message",{message:input}, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        })
+      console.log("data post",data)
+    } catch (error) {
+      console.log(error)
+    }
+    
+    setInput("");
   };
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
-    const getMessage =async () => {
-    try {
-        let { data } = await axios.get("http://localhost:4000/message", {
-        headers: {
-      Authorization: localStorage.getItem("token"),
-    },
-        })
-       setMessages((prev) => [...prev, data.message])
-        console.log(data.messages)
-    } catch (error) {
-        console.log(error)
-    }
-    }
-    useEffect(() => {
-    getMessage()
-    },[])
-    
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -75,7 +56,7 @@ const ChatUI = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-
+      
       {/* Header */}
       <div className="bg-green-600 flex justify-between items-center text-white p-4 font-semibold text-lg">
         <div>Chat App</div>
@@ -92,22 +73,8 @@ const ChatUI = () => {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${
-              msg.sender === "me" ? "justify-end" : "justify-start"
-            }`}
           >
-            <div
-              className={`max-w-xs p-3 rounded-2xl shadow text-sm ${
-                msg.sender === "me"
-                  ? "bg-green-500 text-white rounded-br-none"
-                  : "bg-white text-black rounded-bl-none"
-              }`}
-            >
-              <p>{msg.text}</p>
-              <p className="text-[10px] mt-1 text-right opacity-70">
-                {msg.time}
-              </p>
-            </div>
+            <h1>{msg.message}</h1>
           </div>
         ))}
         <div ref={chatEndRef} />
