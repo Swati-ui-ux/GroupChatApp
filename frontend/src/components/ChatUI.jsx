@@ -26,9 +26,11 @@ const ChatUI = () => {
     } catch (error) {
       console.log(error)
     }
+    setTimeout(getMessages, 2000);
   };  
   useEffect(() => {
-setInterval(getMessages,5000)
+    getMessages();
+// setInterval(getMessages,5000)
   }, []);
   const sendMessage = async(e) => {
     e.preventDefault();
