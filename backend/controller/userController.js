@@ -33,7 +33,11 @@ try {
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.SECRET_KEY,
         { expiresIn:'7d'}
     )
-    res.status(200).json({message:"User login success",token})
+    res.status(200).json({message:"User login success",token,user: {
+    id: user.id,
+    name: user.name,
+    email: user.email
+  }})
 } catch (error) {
     console.log(error)
     res.status(500).json({message:"server error"})

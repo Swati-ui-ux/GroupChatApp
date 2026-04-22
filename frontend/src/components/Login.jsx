@@ -19,7 +19,9 @@ const Login = () => {
     e.preventDefault();
 try {
     const { data } = await axios.post("http://localhost:4000/users/login", formData)
-    localStorage.setItem("token",data.token)
+  localStorage.setItem("token", data.token)
+  console.log(data)
+  localStorage.setItem("userId",data.user.id); 
     toast.success(data.message)
     console.log(data)
 } catch (error) {
