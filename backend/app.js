@@ -11,6 +11,20 @@ const messageRouter = require("./router/messageRoute")
 const authMiddleware = require("./middleware/authMiddleware")
 const cors = require("cors")
  
+const {Server} = require("socket.io");
+const http = require("http")
+const { Message } = require("./model")
+
+const server = http.createServer(app)
+const io = new Server(server, {
+    cors: {
+    origin:"*",
+    }
+})
+
+
+
+
 
 // middleware
 app.use(cors())
@@ -24,6 +38,30 @@ db.sync({ alter: true })
     .then(() =>console.log("db ok"))
     .catch(() => console.log("db error"))
 
-app.listen(port, () => {
+io.on("connection", (socket) => {
+    console.log("user is conected", socket.id)
+    socket.on("send_message", async (data) => {
+        try {
+            const newMessage = await Message.create({
+                message: data.message,
+                userId: data.userId,
+            })
+            io.emit("receive_message",newMessage)
+        } catch (error) {
+            console.error("Error creating message:", error)
+        }
+        console.log("Message", data)
+        io.emit("receive_message", data)
+    });
+    socket.on("disconnect", () => {
+        console.log("user disconnected", socket.id)
+    });
+    
+
+})
+
+server.listen(port, () => {
 console.log("server is running ",port)
 })
+
+// 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios"
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom"
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -66,7 +67,9 @@ try {
         {/* Extra links */}
         <p className="text-sm text-center mt-4">
           Don't have an account?{" "}
-          <span className="text-blue-500 cursor-pointer">Sign Up</span>
+          <Link to="/signup" className="text-blue-500 cursor-pointer">
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>
